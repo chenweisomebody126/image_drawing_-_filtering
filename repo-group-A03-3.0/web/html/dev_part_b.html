@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <meta http-equiv="content-type" content="text/html;
+      charset=windows-1252">
+    <title></title>
+  </head>
+  <body>
+    <h1 id="design-justifications-for-the-brush-work-app">Using MIA: A
+      tutorial on how to convert and segment a CT Scan</h1>
+    1. Write your Pencil classís .h file and place it in the ìincludeî
+    directory. Pencil class should extend from Tool class. Pencil class
+    should be place in ìimage_toolsî namespace All destruction of
+    classes are handled in Tool class.<br>
+    <p>2. In Tool class, parent class which Pencil is inheriting from,
+      has a field called ‚Äúmask‚Äù. This field is initialized in each
+      tool. It is what is going to be drawn on to the canvas by the
+      paint method. Mask is a two dimensional array of floats. In the
+      constructor of pencil: Allocate memory for ‚Äúmask_‚Äù (is a field
+      that exists in Tool class) from the heap. Initialize each element
+      of ‚Äúmask_‚Äù with floating numbers to the pattern of a pencil.
+      I.e the smaller the value the less opaque the current color that
+      is to be drawn. Place implementation for pencil.h in the ‚Äúsrc‚Äù
+      directory.</p>
+    <pre><code>&gt; src/pencil.cc</code></pre>
+    <pre><code>/// Allocate memory for mask
+mask_ = ... 
+
+/// This can be used to Initialize. OPTIONAL
+mask_ = {{0.5, 1.0, 0.5},    
+        {1.0, 1.0, 1.0},
+        {0.5, 1.0, 0.5}};
+...</code></pre>
+    <p>&nbsp;<br>
+      If mask was used to paint over canvas, it will have an effect that
+      will look like the following:</p>
+    <p>3. Pencil class needs to be instantiated and added to the
+      tools_** field of main Brushwork app. This is done through
+      InitializeTools() method in brushwork app. Go to InitializeTools()
+      in the brushwork_app.cc Increment num_tools_ by number of tools
+      added. Initialize Pencil to the correct index of tools_. CAUTION:
+      index corresponds to UI. be careful on index position of your tool
+      on tool_ array<br>
+    </p>
+    <p></p>
+    <pre>&gt; src/brushwork_app.cc:</pre>
+    <p> </p>
+    <pre><code>/// Add new Tool at the appropriate index
+void BrushWorkApp::InitializeTools() {
+    /// Increment num_tools_ by number of tools added
+    /// Needed for creating and destroying tools. IMPORTANT
+    num_tools_ = 6;  
+    tools_ = new Tool*[num_tools_];
+    tools_[0] = new Pen();
+    tools_[1] = new Eraser();
+    tools_[2] = new SprayPaint();
+    tools_[3] = new CalligraphyPen();
+    tools_[4] = new Highlighter();
+    tools_[5] = new Chalk();
+    Tools_[appropriate index] =  /// Initialize your tool here
+}
+
+...</code></pre>
+    <p>&gt; End of Tutorial </p>
+  </body>
+</html>

@@ -1,0 +1,25 @@
+GOOGLE_STYLE_EXE = ./ext/cpplint/cpplint.py --linelength=81
+
+SRCDIR_FP = ./src/app/FlashPhoto/src
+INCDIR_FP = $(SRCDIR_FP)/include
+FLASHPHOTO_INC_CXX = $(wildcard $(INCDIR_FP)/*.h)
+FLASHPHOTO_SRC_CXX = $(wildcard $(SRCDIR_FP)/*.cc)
+
+SRCDIR_MIA = ./src/app/MIA/src
+INCDIR_MIA = $(SRCDIR_MIA)/include
+MIA_INC_CXX = $(wildcard $(INCDIR_MIA)/*.h)
+MIA_SRC_CXX = $(wildcard $(SRCDIR_MIA)/*.cc)
+
+SRCDIR_LIB = ./src/lib/libimgtools/src
+INCDIR_LIB = $(SRCDIR_LIB)/include
+LIB_INC_CXX = $(wildcard $(INCDIR_LIB)/*.h)
+LIB_SRC_CXX = $(wildcard $(SRCDIR_LIB)/*.cc)
+
+# Google style checker
+fp:
+	$(GOOGLE_STYLE_EXE) $(FLASHPHOTO_INC_CXX) $(FLASHPHOTO_SRC_CXX)
+MIA:
+	$(GOOGLE_STYLE_EXE) $(MIA_INC_CXX) $(MIA_SRC_CXX)
+
+lib:
+	$(GOOGLE_STYLE_EXE) $(LIB_INC_CXX) $(LIB_SRC_CXX)

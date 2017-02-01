@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+
+    <meta http-equiv="content-type" content="text/html; charset=windows-1252">
+  </head>
+  <body>
+    <h1 id="design-justifications-for-flashphoto">Adding a New Filter: A
+      tutorial on how to add a new Invert filter to Flash Photo</h1>
+    Step 1: Add a new enum for Invert filter as a GLUI Interface element
+    <pre><code>&gt; src/include/ui_ctrl.h</code></pre>
+    <p><code>C++ enum Type { ... UI_APPLY_BLUR, UI_APPLY_SHARP,
+        UI_APPLY_EDGE, UI_APPLY_THRESHOLD, UI_APPLY_DITHER,
+        UI_APPLY_SATURATE, UI_APPLY_CHANNEL, UI_APPLY_QUANTIZE,
+        UI_APPLY_MOTION_BLUR, UI_APPLY_SPECIAL_FILTER, UI_APPLY_INVERT,
+        // A new enum for the Invert filter UI_UNDO, UI_REDO, UI_QUIT };</code></p>
+    <p>Step 2: Add a new panel for Invert filter on GLUI UI</p>
+    <pre>&gt; src/filter_manager.cc
+
+</pre>
+    <pre>void FilterManager::InitGlui(const GLUI <em>const glui, void (</em>s_gluicallback)(int)) {<br>...<br>GLUI_Panel *specialFilterPanel = new GLUI_Panel(filter_panel, "Emboss"); <br>	{ new GLUI_Button(specialFilterPanel, "Apply", UICtrl::UI_APPLY_SPECIAL_FILTER, s_gluicallback); }</pre>
+<pre><code>GLUI_Panel *specialFilterPanel = new GLUI_Panel(filter_panel, "Invert");
+{
+  new GLUI_Button(specialFilterPanel,
+                  "Apply",
+                  UICtrl::UI_APPLY_INVERT, // use the enum for Invert
+                  s_gluicallback);
+}</code></pre>
+<p>} /* FilterManager::InitGlui() */ <br></p>
+<p>Step 3: Create ApplyInvert() to apply Invert effect on canvas</p><pre>&gt;src/filter_manager.cc
+
+</pre><p>namespace image_tools {<br></p><pre>...</pre><pre>void FilterManager::ApplySpecial(PixelBuffer <em>display_buffer)<br>{ std::cout &lt;&lt; "Apply has been clicked for Special" &lt;&lt; std::endl; Kernel</em> emboss_kernel = new KEmboss(1); apply_kernel(emboss_kernel, display_buffer); }</pre>
+<pre><code>void FilterManager::ApplyInvert(PixelBuffer *display_buffer) {
+  std::cout &lt;&lt; "Apply has been clicked for Invert" &lt;&lt; std::endl;
+  for (int x = 0; x &lt; display_buffer-&gt;width(); x++) {
+    for (int y = 0; y &lt; display_buffer-&gt;height(); y++) {
+      ColorData pixel_color_ = display_buffer-&gt;get_pixel(x, y);
+      float red = 1 - pixel_color_.red();     // newColor's red   = 1 - oldColor's red
+      float green = 1 - pixel_color_.green(); // newColor's green = 1 - oldColor's green
+      float blue = 1 - pixel_color_.blue();   // newColor's blue  = 1 - oldColor's blue
+      float alpha = pixel_color_.alpha();
+      display_buffer-&gt;set_pixel(x, y, ColorData(red, green, blue, alpha));
+    }
+  }
+}
+...</code></pre>
+<p>} /* namespace image_tools */ <br></p>
+<p>Step 4: Set up that ApplyInvert() will be executed once Invert filter is applied</p><pre>&gt; src/flashphoto_app.cc
+</pre><p><code>void FlashPhotoApp::GluiControl(int control_id) {<br>switch (control_id) {<br>&nbsp;&nbsp;&nbsp; ...<br>&nbsp;&nbsp;&nbsp; case UICtrl::UI_APPLY_SPECIAL_FILTER:         state_manager_.update_states(display_buffer_);         filter_manager_.ApplySpecial(display_buffer_);         break; <br>&nbsp;&nbsp;&nbsp; case UICtrl::UI_APPLY_SPECIAL_FILTER:         state_manager_.update_states(display_buffer_);         filter_manager_.ApplyInvert(display_buffer_);         break;<br>&nbsp;&nbsp;&nbsp; case UICtrl::UI_FILE_BROWSER:         io_manager_.set_image_file(io_manager_.file_browser()-&gt;get_file());         break;<br>&nbsp;&nbsp;&nbsp; ...     <br>&nbsp;&nbsp;&nbsp; }<br>&nbsp;&nbsp;&nbsp; ...<br>}</code></p>
+</body></html>
